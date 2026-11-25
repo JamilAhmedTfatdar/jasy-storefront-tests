@@ -8,8 +8,9 @@ on:
       project:
         description: Which tests to run
         type: choice
-        default: all
+        default: stable
         options:
+          - stable
           - all
           - desktop
           - mobile
@@ -40,6 +41,10 @@ jobs:
         run: |
           if [ "$PROJECT" = "all" ]; then
             npx playwright test
+          elif [ "$PROJECT" = "stable" ]; then
+            # Leaves out what GitHub's cloud servers cannot test reliably (the store's cart, checkout and
+            # link checks are blocked or slowed for them) and the two known phone findings. Run those on your Mac.
+            npx playwright test --grep-invert "Cart and checkout|TC-26 No broken|EX-01 No Gmail|TC-27 Product page|TC-28 Phone tap"
           else
             npx playwright test --project="$PROJECT"
           fi

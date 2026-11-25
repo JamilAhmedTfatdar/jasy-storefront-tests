@@ -80,7 +80,9 @@ Also noted: two category pages (Kitchen & Home, Everyday Living) show "More prod
 
 ## Run it on GitHub
 
-Open the Actions tab, choose "Storefront tests (manual)", click "Run workflow" and pick all, desktop or mobile.
+Open the Actions tab, choose "Storefront tests (manual)", click "Run workflow" and pick stable, all, desktop or mobile.
+"stable" skips the cart, checkout and link checks, which the live store blocks or slows for GitHub's cloud servers
+(they pass from a home computer), and the two known phone findings. "all" runs everything.
 It starts only when you press the button. While the store is locked it needs a repository secret named
 `STOREFRONT_PASSWORD` (Settings, Secrets and variables, Actions). The HTML report is saved on the run page
 as an artifact for 14 days. The two known real findings (TC-27 and TC-28 on the phone) make a full run end red.
