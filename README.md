@@ -77,3 +77,10 @@ Latest full Playwright run: 68 passed, 4 skipped, 2 failed. The two failures are
 - TC-28 (phone): the product gallery dots are 18 by 18 px, smaller than the 24 px touch target size that WCAG 2.2 recommends.
 
 Also noted: two category pages (Kitchen & Home, Everyday Living) show "More products coming soon".
+
+## Run it on GitHub
+
+Open the Actions tab, choose "Storefront tests (manual)", click "Run workflow" and pick all, desktop or mobile.
+It starts only when you press the button. While the store is locked it needs a repository secret named
+`STOREFRONT_PASSWORD` (Settings, Secrets and variables, Actions). The HTML report is saved on the run page
+as an artifact for 14 days. The two known real findings (TC-27 and TC-28 on the phone) make a full run end red.
