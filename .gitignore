@@ -1,0 +1,13 @@
+node_modules/
+test-results/
+playwright-report/
+.auth/
+discover/
+.env
+*.zip
+.DS_Store
+.idea/
+*.log
+ios-sim/node_modules/
+ios-sim/.appium/
+ios-sim/logs/

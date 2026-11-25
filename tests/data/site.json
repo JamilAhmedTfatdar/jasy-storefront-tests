@@ -1,0 +1,42 @@
+{
+  "brand": "JASY Everyday",
+  "supportEmail": "support@jasyeveryday.com",
+  "product": {
+    "handle": "mini-reusable-pet-hair-remover",
+    "titleWords": "pet hair remover",
+    "searchKeyword": "pet"
+  },
+  "desktopNav": [
+    { "name": "Home", "path": "/" },
+    { "name": "Shop Essentials", "path": "/collections/shop-essentials" },
+    { "name": "About Us", "path": "/pages/about-us" },
+    { "name": "Contact Us", "path": "/pages/contact" }
+  ],
+  "helpfulLinks": [
+    { "name": "Shop Essentials", "path": "/collections/shop-essentials" },
+    { "name": "About Us", "path": "/pages/about-us" },
+    { "name": "Contact Us", "path": "/pages/contact" },
+    { "name": "Search", "path": "/search" }
+  ],
+  "drawerCategories": [
+    { "name": "Cleaning Essentials", "path": "/collections/cleaning-essentials" },
+    { "name": "Kitchen & Home", "path": "/collections/kitchen-home" },
+    { "name": "Home Organization", "path": "/collections/home-organization" },
+    { "name": "Everyday Living", "path": "/collections/everyday-living" },
+    { "name": "Pet Care Essentials", "path": "/collections/pet-care-essentials" }
+  ],
+  "collections": [
+    { "name": "Shop Essentials", "path": "/collections/shop-essentials" },
+    { "name": "Cleaning Essentials", "path": "/collections/cleaning-essentials" },
+    { "name": "Kitchen & Home", "path": "/collections/kitchen-home" },
+    { "name": "Home Organization", "path": "/collections/home-organization" },
+    { "name": "Everyday Living", "path": "/collections/everyday-living" },
+    { "name": "Pet Care Essentials", "path": "/collections/pet-care-essentials" }
+  ],
+  "policies": [
+    { "name": "Privacy policy", "path": "/policies/privacy-policy" },
+    { "name": "Refund policy", "path": "/policies/refund-policy" },
+    { "name": "Terms of service", "path": "/policies/terms-of-service" },
+    { "name": "Shipping policy", "path": "/policies/shipping-policy" }
+  ]
+}

@@ -1,0 +1,87 @@
+const { test, expect } = require('@playwright/test');
+const site = require('./data/site.json');
+const {
+  pathOf,
+  brokenImages,
+  openDrawer,
+  closeDrawerWithX,
+  closeDrawerWithBackdrop,
+  tapDrawerLink,
+  tapFooterLink,
+} = require('./helpers/storefront');
+
+// Tags in the test name decide where a test runs: @desktop only on the desktop project,
+// @mobile only on the phone project, no tag means both.
+
+test.describe('TC-01 to TC-09 Store loading and navigation', () => {
+  test('TC-01 Store loads without errors, broken images or a password page', async ({ page }) => {
+    const response = await page.goto('/');
+    expect(response.status()).toBeLessThan(400);
+    expect(page.url(), 'The "Opening soon" password page is showing').not.toContain('/password');
+    await expect(page).toHaveTitle(new RegExp(site.brand.split(' ')[0], 'i'));
+    await expect(page.locator('main')).toBeVisible();
+    expect(await brokenImages(page), 'Images that did not load').toEqual([]);
+  });
+
+  for (const link of site.desktopNav) {
+    test(`TC-02 Desktop header link "${link.name}" opens the right page @desktop`, async ({ page }) => {
+      await page.goto('/');
+      await page.locator('header').getByRole('link', { name: link.name, exact: true }).first().click();
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page).not.toHaveTitle(/404|not found/i);
+      expect(pathOf(page)).toBe(link.path);
+    });
+  }
+
+  test('TC-03 Phone menu opens and closes with X @mobile', async ({ page }) => {
+    await page.goto('/');
+    await openDrawer(page);
+    await closeDrawerWithX(page);
+  });
+
+  test('TC-03 Phone menu closes when the background is tapped @mobile', async ({ page }) => {
+    await page.goto('/');
+    await openDrawer(page);
+    await closeDrawerWithBackdrop(page);
+  });
+
+  test('TC-04 Phone menu: Shop Essentials expands or opens its page @mobile', async ({ page }) => {
+    await page.goto('/');
+    await openDrawer(page);
+    await tapDrawerLink(page, 'Shop Essentials');
+    await page.waitForTimeout(1500);
+    const opened = pathOf(page) === '/collections/shop-essentials';
+    if (opened === false) {
+      // It did not navigate, so it must have expanded and shown the category links.
+      await expect(page.getByRole('link', { name: site.drawerCategories[0].name, exact: true }).first()).toBeVisible();
+    }
+  });
+
+  for (const cat of site.drawerCategories) {
+    test(`TC-04 Phone menu category "${cat.name}" opens its page @mobile`, async ({ page }) => {
+      await page.goto('/');
+      await openDrawer(page);
+      await tapDrawerLink(page, cat.name);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page).not.toHaveTitle(/404|not found/i);
+      expect(pathOf(page)).toBe(cat.path);
+    });
+  }
+
+  test('TC-05 Footer shows the "Helpful links" heading @mobile', async ({ page }) => {
+    await page.goto('/');
+    const footer = page.locator('footer').first();
+    await footer.scrollIntoViewIfNeeded();
+    await expect(footer.getByText(/helpful links/i).first()).toBeVisible();
+  });
+
+  site.helpfulLinks.forEach((link, i) => {
+    test(`TC-0${6 + i} Footer Helpful links: "${link.name}" opens the right page @mobile`, async ({ page }) => {
+      await page.goto('/');
+      await tapFooterLink(page, link.name);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page).not.toHaveTitle(/404|not found/i);
+      expect(pathOf(page)).toBe(link.path);
+    });
+  });
+});

@@ -1,0 +1,22 @@
+{
+  "name": "jasy-storefront-ios-simulator-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Appium + WebdriverIO checks of the JASY Everyday storefront in real Safari on the iOS Simulator",
+  "type": "module",
+  "scripts": {
+    "setup:driver": "APPIUM_HOME=$PWD/.appium appium driver install xcuitest",
+    "drivers": "APPIUM_HOME=$PWD/.appium appium driver list --installed",
+    "smoke": "APPIUM_HOME=$PWD/.appium wdio run wdio.conf.js --mochaOpts.grep SIM-01",
+    "test": "APPIUM_HOME=$PWD/.appium wdio run wdio.conf.js"
+  },
+  "devDependencies": {
+    "@wdio/appium-service": "^9.0.0",
+    "@wdio/cli": "^9.0.0",
+    "@wdio/local-runner": "^9.0.0",
+    "@wdio/mocha-framework": "^9.0.0",
+    "@wdio/spec-reporter": "^9.0.0",
+    "appium": "^4.0.0",
+    "webdriverio": "^9.0.0"
+  }
+}
