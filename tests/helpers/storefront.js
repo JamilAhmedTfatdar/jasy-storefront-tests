@@ -6,23 +6,37 @@ function isMobile(page) {
   return page.viewportSize().width < 750;
 }
 
+// Reads a store address from inside the page, the way the store's own scripts do. Shopify throttles
+// bare requests from the test runner much harder than requests that come from a real page.
+async function fetchText(page, url) {
+  if (page.url().indexOf('http') !== 0) await page.goto('/');
+  try {
+    return await page.evaluate(async (u) => {
+      const r = await fetch(u, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+      return { status: r.status, body: await r.text() };
+    }, url);
+  } catch (e) {
+    return { status: 0, body: 'page was busy: ' + String(e.message).slice(0, 60) };
+  }
+}
+
 // Shopify keeps the cart as JSON at /cart.js. Reading it is the most reliable
 // way to check what is really in the cart.
 async function getCart(page) {
   let last = '';
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await page.request.get('/cart.js');
-    const type = res.headers()['content-type'] || '';
-    const body = await res.text();
-    if (res.status() === 200) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const res = await fetchText(page, '/cart.js');
+    const type = 'json';
+    const body = res.body;
+    if (res.status === 200) {
       try {
         return JSON.parse(body);
       } catch (e) {
         // not cart data (for example a web page while Shopify throttles); wait and try again
       }
     }
-    last = 'status ' + res.status() + ', type ' + type + ', starts with ' + body.slice(0, 40).replace(/\s+/g, ' ');
-    await page.waitForTimeout(1500 * (attempt + 1));
+    last = 'status ' + res.status + ', type ' + type + ', starts with ' + body.slice(0, 40).replace(/\s+/g, ' ');
+    await page.waitForTimeout(2000 * (attempt + 1));
   }
   throw new Error('/cart.js did not return cart data (' + last + ')');
 }
@@ -30,18 +44,18 @@ async function getCart(page) {
 // Reads JSON from the store. Shopify can answer with a web page while it throttles, so wait and retry.
 async function getJson(page, url) {
   let last = '';
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await page.request.get(url);
-    const body = await res.text();
-    if (res.status() === 200) {
+  for (let attempt = 0; attempt < 7; attempt++) {
+    const res = await fetchText(page, url);
+    const body = res.body;
+    if (res.status === 200) {
       try {
         return JSON.parse(body);
       } catch (e) {
         // not JSON; wait and try again
       }
     }
-    last = 'status ' + res.status() + ', starts with ' + body.slice(0, 40).replace(/\s+/g, ' ');
-    await page.waitForTimeout(1500 * (attempt + 1));
+    last = 'status ' + res.status + ', starts with ' + body.slice(0, 40).replace(/\s+/g, ' ');
+    await page.waitForTimeout(2500 * (attempt + 1));
   }
   throw new Error(url + ' did not return data (' + last + ')');
 }
@@ -57,8 +71,20 @@ async function getStatus(page, url) {
 }
 
 // Empties the cart (Shopify Ajax API) so every cart test starts from zero.
+async function postJson(page, url, data) {
+  if (page.url().indexOf('http') !== 0) await page.goto('/');
+  try {
+    return await page.evaluate(async ({ u, d }) => {
+      const r = await fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), credentials: 'same-origin' });
+      return { status: r.status };
+    }, { u: url, d: data });
+  } catch (e) {
+    return { status: 0 };
+  }
+}
+
 async function clearCart(page) {
-  await page.request.post('/cart/clear.js');
+  await postJson(page, '/cart/clear.js', {});
 }
 
 // Puts one of the named product in the cart through Shopify's cart API (fast setup).
@@ -66,7 +92,13 @@ async function addProductByApi(page, handle) {
   const product = await getJson(page, '/products/' + handle + '.js');
   const variant = product.variants.find((v) => v.available);
   expect(variant, 'No available variant for ' + handle).toBeDefined();
-  await page.request.post('/cart/add.js', { data: { id: variant.id, quantity: 1 } });
+  // Add it, then make sure it really landed (Shopify sometimes throttles the first try).
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if ((await getCart(page)).item_count >= 1) break;
+    await postJson(page, '/cart/add.js', { id: variant.id, quantity: 1 });
+    await page.waitForTimeout(1000 * (attempt + 1));
+  }
+  expect((await getCart(page)).item_count, 'The product did not get into the cart').toBeGreaterThanOrEqual(1);
   return product;
 }
 

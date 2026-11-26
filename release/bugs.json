@@ -1,0 +1,111 @@
+{
+  "note": "Edit severity and status here. Severity: Blocker, Major, Minor, Trivial. Status: open, fixed, verified, wont-fix. releaseOnly means it does not stop testing but does stop go-live.",
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "title": "Phone menu does not show About Us and Contact Us (links are hidden inside the menu)",
+      "severity": "Major",
+      "status": "verified",
+      "tests": [
+        "TC10",
+        "TC11"
+      ],
+      "fix": "Theme: make the About Us and Contact Us entries visible in the mobile menu (Online Store > Navigation > main menu, then check the header drawer)",
+      "note": "Fixed by publishing the theme copy with the mobile menu fix; TC10 and TC11 pass on the live store (2026-11-26)"
+    },
+    {
+      "id": "BUG-002",
+      "title": "Store is still password protected (Opening soon)",
+      "severity": "Blocker",
+      "status": "open",
+      "releaseOnly": true,
+      "tests": [
+        "TC01",
+        "TC02"
+      ],
+      "fix": "Online Store > Preferences > turn off password protection, only when everything else is ready"
+    },
+    {
+      "id": "BUG-003",
+      "title": "Quantity box keeps 0 or a negative number when typed",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC27"
+      ]
+    },
+    {
+      "id": "BUG-004",
+      "title": "Kitchen & Home and Everyday Living collections are empty (More products coming soon)",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC19",
+        "TC20"
+      ]
+    },
+    {
+      "id": "BUG-005",
+      "title": "Product gallery dots are 18x18 px, small for a finger",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC25",
+        "EX-09"
+      ]
+    },
+    {
+      "id": "BUG-006",
+      "title": "Chat panel content does not load in the Simulator, and a tap did not close it (only a script click did). Check on a real phone once the store is public",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC50",
+        "TC51",
+        "TC52"
+      ]
+    },
+    {
+      "id": "BUG-007",
+      "title": "Zoomed product picture: the thumbnails and dots do not follow when you swipe or tap the arrows (stuck on the first one)",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC24",
+        "TC25"
+      ],
+      "fix": "Theme: the zoom viewer should move its selected thumbnail and dot together with the picture"
+    },
+    {
+      "id": "BUG-008",
+      "title": "Cat Calming Gel Diffuser was live but not in the Pet Care Essentials collection",
+      "severity": "Minor",
+      "status": "verified",
+      "tests": [
+        "TC19",
+        "TC21"
+      ],
+      "fix": "Added to the collection; collection now shows 3 products"
+    },
+    {
+      "id": "BUG-009",
+      "title": "A product shows a \"Default Default\" variant label (cosmetic)",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC22"
+      ],
+      "fix": "Shopify Admin: give the product real option names, or hide the single default option"
+    },
+    {
+      "id": "BUG-010",
+      "title": "JavaScript error on iPhone-type browsers: \"Can't find variable: requestIdleCallback\" (a script on the store calls a function Safari does not have)",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "EX-06"
+      ],
+      "fix": "Find which script uses requestIdleCallback without a fallback (theme or an app) and add a simple fallback; then check the phone for anything that did not load"
+    }
+  ]
+}

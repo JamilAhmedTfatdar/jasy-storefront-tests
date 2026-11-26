@@ -7,7 +7,7 @@
   "scripts": {
     "setup:driver": "APPIUM_HOME=$PWD/.appium appium driver install xcuitest",
     "drivers": "APPIUM_HOME=$PWD/.appium appium driver list --installed",
-    "smoke": "APPIUM_HOME=$PWD/.appium wdio run wdio.conf.js --mochaOpts.grep SIM-01",
+    "smoke": "APPIUM_HOME=$PWD/.appium wdio run wdio.conf.js --mochaOpts.grep TC02",
     "test": "APPIUM_HOME=$PWD/.appium wdio run wdio.conf.js"
   },
   "devDependencies": {

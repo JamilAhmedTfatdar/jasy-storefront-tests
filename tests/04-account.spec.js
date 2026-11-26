@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 
 // TC-18 stops at the sign-in form: the one-time code that Shopify emails is never read or typed.
 // TC-19 and TC-20 need a signed-in browser session. Run "npm run login" once, sign in yourself in
@@ -8,8 +8,8 @@ const { test, expect } = require('@playwright/test');
 const CUSTOMER = '.auth/customer.json';
 const hasLogin = fs.existsSync(CUSTOMER);
 
-test.describe('TC-18 Customer sign-in', () => {
-  test('TC-18 Account icon leads to the email sign-in form (entering the code is manual)', async ({ page }) => {
+test.describe('Customer sign-in', () => {
+  test('TC08 Account icon leads to the email sign-in form (entering the code is manual)', async ({ page }) => {
     await page.goto('/');
     const header = page.locator('header');
     const account = header
@@ -28,7 +28,7 @@ test.describe('TC-18 Customer sign-in', () => {
   });
 });
 
-test.describe('TC-19 and TC-20 Signed-in account pages', () => {
+test.describe('Signed-in account pages', () => {
   test.skip(hasLogin === false, 'Needs a saved sign-in. Run "npm run login" once (see README).');
   test.use({ storageState: hasLogin ? CUSTOMER : '.auth/storefront.json' });
 
@@ -37,13 +37,13 @@ test.describe('TC-19 and TC-20 Signed-in account pages', () => {
     return u.protocol + '//account.' + u.hostname + path;
   }
 
-  test('TC-19 Profile page shows the customer email', async ({ page, baseURL }) => {
+  test('EX-15 Profile page shows the customer email', async ({ page, baseURL }) => {
     await page.goto(accountUrl(baseURL, '/profile'));
     await expect(page).toHaveURL(/profile/);
     await expect(page.locator('body'), 'The profile page does not show an email address').toContainText('@', { timeout: 20000 });
   });
 
-  test('TC-20 Orders page loads without errors', async ({ page, baseURL }) => {
+  test('EX-16 Orders page loads without errors', async ({ page, baseURL }) => {
     await page.goto(accountUrl(baseURL, '/orders'));
     await expect(page).toHaveURL(/orders/);
     await expect(page.locator('body')).not.toContainText(/something went wrong|error/i);

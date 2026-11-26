@@ -70,6 +70,65 @@ export default class BasePage {
     throw new Error('Nothing to tap for "' + name + '". Links with that name: ' + links.length + '. ' + notes.join(' | '));
   }
 
+  // Everything the page shows as text, on one line.
+  async bodyText() {
+    return (await $('body').getText()).replace(/\s+/g, ' ');
+  }
+
+  // Scrolls an element to the middle of the screen with the browser's own scroll (more reliable in Safari than WebDriver's).
+  async jsScroll(el) {
+    await browser.execute((e) => e.scrollIntoView({ block: 'center', inline: 'nearest' }), el);
+    await browser.pause(400);
+  }
+
+  // Scrolls to the element, warns if something seems to cover it, then taps it.
+  async tap(el, name) {
+    await this.jsScroll(el);
+    if ((await this.isOnTop(el)) === false) {
+      console.log('WARNING: "' + name + '" looked covered (' + (await this.describeSpot(el)) + '); tapping it anyway');
+    }
+    await el.click();
+  }
+
+  // The first visible button or link with this aria-label (starts-with match).
+  async headerButton(label) {
+    return this.firstDisplayed('//*[self::button or self::a or self::summary][starts-with(@aria-label,"' + label + '")]');
+  }
+
+  // Waits until the page address path is exactly this one ("/" for the home page).
+  async waitForPath(expected, timeout = 15000) {
+    const clean = (p) => (p.length > 1 ? p.replace(/\/+$/, '') : p);
+    await browser.waitUntil(async () => clean(new URL(await browser.getUrl()).pathname) === clean(expected), {
+      timeout,
+      timeoutMsg: 'The page address never became ' + expected + ' (it is ' + (await browser.getUrl()) + ')',
+    });
+  }
+
+  async scrollPage(pixels) {
+    await browser.execute((p) => window.scrollBy(0, p), pixels);
+    await browser.pause(500);
+    return browser.execute(() => Math.round(window.scrollY));
+  }
+
+  // Fails if the page can be dragged sideways. Prints the screen size so you can see what the Simulator uses.
+  async expectNoSideScroll(label) {
+    const info = await browser.execute(() => {
+      const d = document.documentElement;
+      const wide = [];
+      for (const el of Array.from(document.querySelectorAll('body *'))) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0 && r.right > window.innerWidth + 1 && wide.length < 3) {
+          wide.push(el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className.trim() !== '' ? '.' + el.className.trim().split(/\s+/)[0] : '') + ' reaches ' + Math.round(r.right));
+        }
+      }
+      return { scrollWidth: d.scrollWidth, clientWidth: d.clientWidth, innerWidth: window.innerWidth, innerHeight: window.innerHeight, wide };
+    });
+    console.log(label + ': screen ' + info.innerWidth + 'x' + info.innerHeight + ', page width ' + info.scrollWidth);
+    if (info.scrollWidth > info.clientWidth + 1) {
+      throw new Error(label + ': the page can be dragged sideways (page ' + info.scrollWidth + ' wide, screen ' + info.clientWidth + '). Wide items: ' + info.wide.join(' | '));
+    }
+  }
+
   async waitForUrlToContain(fragment, timeout = 15000) {
     await browser.waitUntil(async () => (await browser.getUrl()).includes(fragment), {
       timeout,

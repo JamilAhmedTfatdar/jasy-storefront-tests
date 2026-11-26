@@ -1,0 +1,15 @@
+{
+  "note": "Set status to pass or fail after you check each item yourself. Never click Fulfill. Turn Shopify Payments test mode off again afterwards.",
+  "checks": [
+    { "id": "TC33", "title": "Judge.me request schedule: After fulfilled, 14 days", "status": "pending" },
+    { "id": "TC34", "title": "Judge.me opt-out protection is on", "status": "pending" },
+    { "id": "TC40", "title": "Checkout payment with the Shopify test card (test mode only)", "status": "pending" },
+    { "id": "TC42", "title": "One test order: Test, Paid, Unfulfilled", "status": "pending" },
+    { "id": "TC43", "title": "Test order details match", "status": "pending" },
+    { "id": "TC44", "title": "CJ store is Authorized or Activated", "status": "pending" },
+    { "id": "TC45", "title": "CJ Fulfill Authorized Orders toggle is OFF", "status": "pending" },
+    { "id": "TC46", "title": "CJ linked SKU and inventory sync have no error", "status": "pending" },
+    { "id": "TC47", "title": "Cancel and refund the test order with restock", "status": "pending" },
+    { "id": "TC48", "title": "CJ did not pick, pay, fulfill or ship the canceled order", "status": "pending" }
+  ]
+}

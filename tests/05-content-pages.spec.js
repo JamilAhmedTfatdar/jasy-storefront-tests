@@ -1,9 +1,9 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 const site = require('./data/site.json');
 const { getStatus, pathOf, horizontalOverflow, brokenImages } = require('./helpers/storefront');
 
-test.describe('TC-21 to TC-25 Content pages, back button and footer', () => {
-  test('TC-21 Contact page shows contact details and its links work', async ({ page }) => {
+test.describe('Content pages, back button and footer', () => {
+  test('EX-10 Contact page shows contact details and its links work', async ({ page }) => {
     await page.goto('/pages/contact');
     await expect(page).not.toHaveTitle(/404|not found/i);
     await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
@@ -23,7 +23,7 @@ test.describe('TC-21 to TC-25 Content pages, back button and footer', () => {
     expect(bad, 'Links on the Contact page that returned an error').toEqual([]);
   });
 
-  test('TC-22 About Us page shows content and images and fits the screen', async ({ page }) => {
+  test('EX-11 About Us page shows content and images and fits the screen', async ({ page }) => {
     await page.goto('/pages/about-us');
     await expect(page).not.toHaveTitle(/404|not found/i);
     await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
@@ -35,7 +35,7 @@ test.describe('TC-21 to TC-25 Content pages, back button and footer', () => {
     expect(await horizontalOverflow(page), 'The page scrolls sideways').toBeLessThanOrEqual(1);
   });
 
-  test('TC-23 Back button returns to the category page with its layout', async ({ page }) => {
+  test('EX-12 Back button returns to the category page with its layout', async ({ page }) => {
     const start = site.collections[0].path;
     await page.goto(start);
     const product = page.locator('main a[href*="/products/"]').and(page.locator(':visible')).first();
@@ -58,7 +58,7 @@ test.describe('TC-21 to TC-25 Content pages, back button and footer', () => {
     expect(await horizontalOverflow(page), 'The page scrolls sideways after going back').toBeLessThanOrEqual(1);
   });
 
-  test('TC-25 Footer shows Helpful links, newsletter, policies and copyright', async ({ page }) => {
+  test('EX-13 Footer shows Helpful links, newsletter, policies and copyright', async ({ page }) => {
     await page.goto('/');
     const footer = page.locator('footer').first();
     await footer.scrollIntoViewIfNeeded();

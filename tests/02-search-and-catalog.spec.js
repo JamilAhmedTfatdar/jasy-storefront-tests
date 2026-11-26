@@ -1,9 +1,9 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 const site = require('./data/site.json');
 const { isMobile, brokenImages, gotoProduct, findAddToCart } = require('./helpers/storefront');
 
-test.describe('TC-10 to TC-14 Search, categories and product page', () => {
-  test('TC-10 Search shows relevant products', async ({ page }) => {
+test.describe('Search, categories and product page', () => {
+  test('TC07 Search shows relevant products', async ({ page }) => {
     await page.goto('/');
     const opener = page.locator('header').getByRole('button', { name: /search/i }).or(page.locator('header').getByRole('link', { name: /search/i })).first();
     await opener.click();
@@ -24,8 +24,8 @@ test.describe('TC-10 to TC-14 Search, categories and product page', () => {
     await expect(results.first(), 'No products appeared for "' + site.product.searchKeyword + '"').toBeVisible({ timeout: 15000 });
   });
 
-  for (const col of site.collections) {
-    test(`TC-11 Category "${col.name}" shows title, products, images and prices`, async ({ page }) => {
+  for (const [id, tag] of [['TC19', '@desktop'], ['TC20', '@mobile']]) for (const col of site.collections) {
+    test(`${id} Category "${col.name}" shows title, products, images and prices ${tag}`, async ({ page }) => {
       await page.goto(col.path);
       await expect(page).not.toHaveTitle(/404|not found/i);
       const heading = page.getByRole('heading', { level: 1 }).first();
@@ -43,7 +43,7 @@ test.describe('TC-10 to TC-14 Search, categories and product page', () => {
     });
   }
 
-  test('TC-11 Category pages show filters', async ({ page }) => {
+  test('TC19 Category pages show filters @desktop', async ({ page }) => {
     const without = [];
     for (const col of site.collections) {
       await page.goto(col.path);
@@ -56,7 +56,7 @@ test.describe('TC-10 to TC-14 Search, categories and product page', () => {
     expect(without, 'Category pages with no filter control found').toEqual([]);
   });
 
-  test('TC-12 Product page shows title, price, description, images, quantity and Add to cart', async ({ page }) => {
+  for (const [id, tag] of [['TC22', '@desktop'], ['TC23', '@mobile']]) test(`${id} Secondary product page shows title, price, description, images, quantity and Add to cart ${tag}`, async ({ page }) => {
     await gotoProduct(page);
     await expect(page).not.toHaveTitle(/404|not found/i);
     await expect(page.getByRole('heading', { level: 1 }).first()).toContainText(new RegExp(site.product.titleWords, 'i'));
@@ -70,7 +70,7 @@ test.describe('TC-10 to TC-14 Search, categories and product page', () => {
     expect(await brokenImages(page), 'Images that did not load').toEqual([]);
   });
 
-  test('TC-13 Product gallery images fit the screen', async ({ page }) => {
+  for (const [id, tag] of [['TC24', '@desktop'], ['TC25', '@mobile']]) test(`${id} Product gallery images fit the screen ${tag}`, async ({ page }) => {
     await gotoProduct(page);
     const view = page.viewportSize();
     if (isMobile(page)) {
@@ -95,7 +95,7 @@ test.describe('TC-10 to TC-14 Search, categories and product page', () => {
 
   // A real finger swipe cannot be sent to the phone browser, so this scrolls the gallery sideways
   // by one picture, which is what a swipe does, and checks the page itself does not move.
-  test('TC-14 Phone gallery moves between pictures (scroll stands in for the swipe) @mobile', async ({ page }) => {
+  test('TC25 Phone gallery moves between pictures (scroll stands in for the swipe) @mobile', async ({ page }) => {
     await gotoProduct(page);
     const result = await page.evaluate(async () => {
       const imgs = Array.from(document.querySelectorAll('main img')).filter((i) => {

@@ -11,3 +11,13 @@ discover/
 ios-sim/node_modules/
 ios-sim/.appium/
 ios-sim/logs/
+
+# test run results and release notes (kept off the public repo)
+release/desktop.json
+release/phone.json
+release/mobile-run.txt
+release/RELEASE-REPORT.md
+backup-before-plan-update/
+release/*.txt
+TestPlan/
+scripts/discover-ui.js

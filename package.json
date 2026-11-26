@@ -10,9 +10,16 @@
     "watch": "SLOW_MS=900 playwright test --headed --workers=1 --project=desktop",
     "watch:mobile": "SLOW_MS=900 playwright test --headed --workers=1 --project=mobile",
     "discover": "node scripts/discover.js",
+    "discover:ui": "node scripts/discover-ui.js",
     "report": "playwright show-report",
+    "watch:one": "ONE_WINDOW=1 SLOW_MS=${SLOW_MS:-900} playwright test --headed --workers=1 --project=desktop",
+    "watch:one:mobile": "ONE_WINDOW=1 SLOW_MS=${SLOW_MS:-900} playwright test --headed --workers=1 --project=mobile",
+    "watch:one:all": "ONE_WINDOW=1 SLOW_MS=${SLOW_MS:-900} playwright test --headed --workers=1 --project=desktop --project=mobile",
     "login": "node scripts/login.js",
-    "watch:shop": "SLOW_MS=900 playwright test --headed --workers=1 --project=mobile -g \"TC-0[3-9]|TC-1[0-7]\""
+    "watch:shop": "SLOW_MS=900 playwright test --headed --workers=1 --project=mobile -g \"TC-0[3-9]|TC-1[0-7]\"",
+    "release:desktop": "PLAYWRIGHT_JSON_OUTPUT_NAME=release/desktop.json playwright test --project=desktop --reporter=list,json",
+    "release:phone": "PLAYWRIGHT_JSON_OUTPUT_NAME=release/phone.json playwright test --project=mobile --reporter=list,json",
+    "release:report": "node scripts/release-report.js --mobile release/mobile-run.txt --desktop release/desktop.json --phone release/phone.json"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0"

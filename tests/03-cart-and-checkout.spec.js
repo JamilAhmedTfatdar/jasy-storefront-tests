@@ -1,12 +1,12 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 const site = require('./data/site.json');
 const { getCart, getJson, clearCart, addProductByApi, gotoProduct, findAddToCart, gotoSettled } = require('./helpers/storefront');
 
 // Safety rule for this file: tests may add items to the cart and OPEN checkout,
 // but never type an email, address or card number and never place an order.
 
-test.describe('TC-15 to TC-17 Cart and checkout', () => {
-  test('TC-15 Add to cart puts the right product and price in the cart', async ({ page }) => {
+test.describe('Cart and checkout', () => {
+  test('TC28 and TC35 Add to cart puts the right product and price in the cart', async ({ page }) => {
     await clearCart(page);
     const data = await getJson(page, '/products/' + site.product.handle + '.js');
     const variant = data.variants.find((v) => v.available);
@@ -32,7 +32,7 @@ test.describe('TC-15 to TC-17 Cart and checkout', () => {
     await expect(page.locator('main')).toContainText('$' + price);
   });
 
-  test('TC-16 Cart quantity can be increased, decreased and removed', async ({ page }) => {
+  test('TC36 and TC37 Cart quantity can be increased, decreased and removed', async ({ page }) => {
     await clearCart(page);
     await addProductByApi(page, site.product.handle);
     await gotoSettled(page, '/cart');
@@ -74,7 +74,7 @@ test.describe('TC-15 to TC-17 Cart and checkout', () => {
     await expect(page.locator('main')).toContainText(/empty/i);
   });
 
-  test('TC-17 Checkout opens securely (nothing is entered, nothing is paid)', async ({ page, baseURL }) => {
+  test('EX-14 Checkout opens securely (nothing is entered, nothing is paid)', async ({ page, baseURL }) => {
     await clearCart(page);
     await addProductByApi(page, site.product.handle);
     await page.goto('/cart');

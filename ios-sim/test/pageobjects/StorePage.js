@@ -1,6 +1,7 @@
 // Home page, phone menu, footer and the password page.
 import BasePage from './BasePage.js';
 import { locators } from '../locators/store.locators.js';
+import { must } from '../helpers/must.js';
 
 class StorePage extends BasePage {
   // While the store shows "Opening soon", enter the preview password from the environment.
@@ -115,6 +116,90 @@ class StorePage extends BasePage {
 
   async tapMenuLink(name) {
     await this.tapLinkNamed(name);
+  }
+
+  // The size of every link in the open phone menu, to check that nothing is clipped.
+  async drawerReport() {
+    return browser.execute((css) => {
+      return Array.from(document.querySelectorAll(css))
+        .map((a) => {
+          const r = a.getBoundingClientRect();
+          return { id: a.id, text: (a.innerText || '').trim(), width: Math.round(r.width), height: Math.round(r.height), right: Math.round(r.right), clipped: a.scrollWidth > a.clientWidth + 1, screenW: window.innerWidth };
+        })
+        .filter((x) => x.width > 0 && x.height > 0);
+    }, locators.drawerLinks);
+  }
+
+  // Taps one phone-menu link by its id (for example "HeaderDrawer-about-us").
+  async tapDrawerLink(id) {
+    const link = await $('#' + id);
+    await link.waitForExist({ timeout: 8000, timeoutMsg: 'The menu has no link with id ' + id });
+    await this.tap(link, id);
+  }
+
+  async search(keyword) {
+    const button = await this.headerButton('Search');
+    await this.tap(button, 'Search');
+    await browser.waitUntil(() => this.isAnyDisplayed(locators.searchInput), { timeout: 8000, timeoutMsg: 'The search box did not open' });
+    const input = await this.firstDisplayed(locators.searchInput);
+    await input.setValue(keyword);
+    await browser.keys('Enter');
+    await browser.pause(2500);
+  }
+
+  async openPolicy(policy) {
+    await this.open('/');
+    const footer = await this.footer();
+    const trigger = await footer.$(locators.policyTrigger);
+    if (await trigger.isExisting()) {
+      await this.tap(trigger, 'Terms and Policies');
+      await browser.pause(700);
+    }
+    await this.tapLinkNamed(policy.name, footer);
+  }
+
+  async heroInfo() {
+    return browser.execute((buttonCss) => {
+      const num = (r) => ({ left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), width: Math.round(r.width), height: Math.round(r.height) });
+      const h1 = Array.from(document.querySelectorAll('h1')).find((h) => h.getBoundingClientRect().width > 10) || document.querySelector('h1');
+      const cta = document.querySelector(buttonCss);
+      const images = Array.from(document.querySelectorAll('main img'))
+        .map((i) => ({ r: i.getBoundingClientRect(), ok: i.complete && i.naturalWidth > 0, src: (i.currentSrc || i.src || '').split('?')[0].slice(-60) }))
+        .filter((x) => x.r.width > 150 && x.r.top < window.innerHeight)
+        .map((x) => ({ ...num(x.r), ok: x.ok, src: x.src }));
+      return {
+        screenW: window.innerWidth,
+        headline: h1 ? h1.innerText.trim() : '',
+        headlineBox: h1 ? num(h1.getBoundingClientRect()) : null,
+        headlineClipped: h1 ? h1.scrollWidth > h1.clientWidth + 1 : false,
+        cta: cta ? { text: cta.innerText.trim(), ...num(cta.getBoundingClientRect()) } : null,
+        images,
+      };
+    }, locators.heroButton);
+  }
+
+  // Every category card on the home page: name, link path and size. Used to check stacking and overlap.
+  async categoryCardReport() {
+    return browser.execute((css) => {
+      return Array.from(document.querySelectorAll(css))
+        .map((a) => {
+          const r = a.getBoundingClientRect();
+          return { name: (a.innerText || '').replace('→', '').trim(), path: new URL(a.href).pathname, left: r.left, right: r.right, top: r.top + window.scrollY, bottom: r.bottom + window.scrollY, width: r.width, height: r.height, screenW: window.innerWidth };
+        })
+        .filter((x) => x.width > 0 && x.height > 0);
+    }, locators.categoryCards);
+  }
+
+  async expectCardsDoNotOverlap(cards) {
+    for (let i = 0; i < cards.length; i++) {
+      for (let j = i + 1; j < cards.length; j++) {
+        const a = cards[i];
+        const b = cards[j];
+        const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        must(!(w > 2 && h > 2), 'The cards "' + a.name + '" and "' + b.name + '" overlap by ' + Math.round(w) + 'x' + Math.round(h));
+      }
+    }
   }
 
   async footer() {

@@ -1,12 +1,12 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 const site = require('./data/site.json');
 const { getStatus, horizontalOverflow, watchProblems, collectLinks } = require('./helpers/storefront');
 
 const productPath = '/products/' + site.product.handle;
 const keyPages = ['/', ...site.collections.map((c) => c.path), productPath, '/pages/about-us', '/pages/contact', '/search', '/cart'];
 
-test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
-  test('TC-24 Layout at 390, 768, 1024 and 1440 px has no sideways scroll or overlapping header controls @desktop', async ({ page }) => {
+test.describe('Layout, links, speed and accessibility', () => {
+  test('EX-04 Layout at 390, 768, 1024 and 1440 px has no sideways scroll or overlapping header controls @desktop', async ({ page }) => {
     test.setTimeout(300000);
     const problems = [];
     for (const width of [390, 768, 1024, 1440]) {
@@ -42,7 +42,7 @@ test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
     expect(problems, 'Layout problems').toEqual([]);
   });
 
-  test('TC-26 No broken links on header, menu, footer, category and product pages', async ({ page }) => {
+  test('EX-05 No broken links on header, menu, footer, category and product pages', async ({ page }) => {
     test.setTimeout(480000);
     const urls = await collectLinks(page, keyPages);
     const bad = [];
@@ -54,7 +54,7 @@ test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
   });
 
   for (const [name, path] of [['Home page', '/'], ['Product page', productPath]]) {
-    test(`TC-27 ${name} loads promptly with no blocking errors`, async ({ page, baseURL }) => {
+    test(`EX-06 ${name} loads promptly with no blocking errors`, async ({ page, baseURL }) => {
       const budget = Number(process.env.PERF_MS || 5000);
       const problems = watchProblems(page, baseURL);
       await page.goto(path);
@@ -90,7 +90,7 @@ test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
     });
   }
 
-  test('TC-28 Keyboard: every Tab stop shows where the focus is @desktop', async ({ page }) => {
+  test('EX-07 Keyboard: every Tab stop shows where the focus is @desktop', async ({ page }) => {
     await page.goto('/');
     const seen = new Set();
     const lacking = [];
@@ -117,7 +117,7 @@ test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
     expect(lacking, 'Elements with no visible focus outline').toEqual([]);
   });
 
-  test('TC-28 Text is readable (nothing tiny) on the home and product pages', async ({ page }) => {
+  test('EX-08 Text is readable (nothing tiny) on the home and product pages', async ({ page }) => {
     const min = Number(process.env.TEXT_MIN_PX || 12);
     const tiny = [];
     for (const path of ['/', productPath]) {
@@ -139,7 +139,7 @@ test.describe('TC-24 to TC-28 Layout, links, speed and accessibility', () => {
   });
 
   // WCAG 2.2 minimum tap size is 24 by 24 px, unless there is enough space around a smaller target.
-  test('TC-28 Phone tap targets are big enough or well spaced @mobile', async ({ page }) => {
+  test('EX-09 Phone tap targets are big enough or well spaced @mobile', async ({ page }) => {
     const min = Number(process.env.TAP_MIN_PX || 24);
     const small = [];
     for (const path of ['/', productPath]) {

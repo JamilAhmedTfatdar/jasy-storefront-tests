@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./helpers/fixtures');
 const site = require('./data/site.json');
 const {
   pathOf,
@@ -13,8 +13,8 @@ const {
 // Tags in the test name decide where a test runs: @desktop only on the desktop project,
 // @mobile only on the phone project, no tag means both.
 
-test.describe('TC-01 to TC-09 Store loading and navigation', () => {
-  test('TC-01 Store loads without errors, broken images or a password page', async ({ page }) => {
+test.describe('Store loading and navigation', () => {
+  for (const [id, tag] of [['TC01', '@desktop'], ['TC02', '@mobile']]) test(`${id} Store loads without errors, broken images or a password page ${tag}`, async ({ page }) => {
     const response = await page.goto('/');
     expect(response.status()).toBeLessThan(400);
     expect(page.url(), 'The "Opening soon" password page is showing').not.toContain('/password');
@@ -24,28 +24,28 @@ test.describe('TC-01 to TC-09 Store loading and navigation', () => {
   });
 
   for (const link of site.desktopNav) {
-    test(`TC-02 Desktop header link "${link.name}" opens the right page @desktop`, async ({ page }) => {
+    test(`TC06 Desktop header link "${link.name}" opens the right page @desktop`, async ({ page }) => {
       await page.goto('/');
       await page.locator('header').getByRole('link', { name: link.name, exact: true }).first().click();
       await page.waitForLoadState('domcontentloaded');
       await expect(page).not.toHaveTitle(/404|not found/i);
-      expect(pathOf(page)).toBe(link.path);
+      await expect.poll(() => pathOf(page), { timeout: 15000 }).toBe(link.path);
     });
   }
 
-  test('TC-03 Phone menu opens and closes with X @mobile', async ({ page }) => {
+  test('TC10 Phone menu opens and closes with X @mobile', async ({ page }) => {
     await page.goto('/');
     await openDrawer(page);
     await closeDrawerWithX(page);
   });
 
-  test('TC-03 Phone menu closes when the background is tapped @mobile', async ({ page }) => {
+  test('TC10 Phone menu closes when the background is tapped @mobile', async ({ page }) => {
     await page.goto('/');
     await openDrawer(page);
     await closeDrawerWithBackdrop(page);
   });
 
-  test('TC-04 Phone menu: Shop Essentials expands or opens its page @mobile', async ({ page }) => {
+  test('EX-02 Phone menu: Shop Essentials expands or opens its page @mobile', async ({ page }) => {
     await page.goto('/');
     await openDrawer(page);
     await tapDrawerLink(page, 'Shop Essentials');
@@ -58,30 +58,30 @@ test.describe('TC-01 to TC-09 Store loading and navigation', () => {
   });
 
   for (const cat of site.drawerCategories) {
-    test(`TC-04 Phone menu category "${cat.name}" opens its page @mobile`, async ({ page }) => {
+    test(`EX-03 Phone menu category "${cat.name}" opens its page @mobile`, async ({ page }) => {
       await page.goto('/');
       await openDrawer(page);
       await tapDrawerLink(page, cat.name);
       await page.waitForLoadState('domcontentloaded');
       await expect(page).not.toHaveTitle(/404|not found/i);
-      expect(pathOf(page)).toBe(cat.path);
+      await expect.poll(() => pathOf(page), { timeout: 15000 }).toBe(cat.path);
     });
   }
 
-  test('TC-05 Footer shows the "Helpful links" heading @mobile', async ({ page }) => {
+  for (const [id, tag] of [['TC12', '@desktop'], ['TC13', '@mobile']]) test(`${id} Footer shows the "Helpful links" heading ${tag}`, async ({ page }) => {
     await page.goto('/');
     const footer = page.locator('footer').first();
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.getByText(/helpful links/i).first()).toBeVisible();
   });
 
-  site.helpfulLinks.forEach((link, i) => {
-    test(`TC-0${6 + i} Footer Helpful links: "${link.name}" opens the right page @mobile`, async ({ page }) => {
+  for (const [id, tag] of [['TC12', '@desktop'], ['TC13', '@mobile']]) site.helpfulLinks.forEach((link) => {
+    test(`${id} Footer Helpful links: "${link.name}" opens the right page ${tag}`, async ({ page }) => {
       await page.goto('/');
       await tapFooterLink(page, link.name);
       await page.waitForLoadState('domcontentloaded');
       await expect(page).not.toHaveTitle(/404|not found/i);
-      expect(pathOf(page)).toBe(link.path);
+      await expect.poll(() => pathOf(page), { timeout: 15000 }).toBe(link.path);
     });
   });
 });
