@@ -106,6 +106,37 @@
         "EX-06"
       ],
       "fix": "Find which script uses requestIdleCallback without a fallback (theme or an app) and add a simple fallback; then check the phone for anything that did not load"
+    },
+    {
+      "id": "BUG-011",
+      "title": "Two test reviews were published on the product page (now hidden as Fake in Judge.me)",
+      "severity": "Major",
+      "status": "verified",
+      "tests": [
+        "TC29",
+        "TC31"
+      ],
+      "fix": "Both test reviews hidden and archived in Judge.me. Brush page checked on desktop and phone: no reviews shown"
+    },
+    {
+      "id": "BUG-012",
+      "title": "Drain Stopper is Active in Shopify but not linked to CJ (orders could not be fulfilled)",
+      "severity": "Major",
+      "status": "fixed",
+      "tests": [
+        "TC46"
+      ],
+      "fix": "Set the product to Draft until it is linked in CJ, then set this bug to fixed"
+    },
+    {
+      "id": "BUG-013",
+      "title": "CJ imported a Shopify test-mode order (CJ ticket said it would not). It stayed Imported, not paid or fulfilled",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC48"
+      ],
+      "fix": "Ask CJ support to remove it. Keep Fulfill Authorized Orders OFF until go-live"
     }
   ]
 }

@@ -21,3 +21,4 @@ backup-before-plan-update/
 release/*.txt
 TestPlan/
 scripts/discover-ui.js
+release/phone-interrupted.json
