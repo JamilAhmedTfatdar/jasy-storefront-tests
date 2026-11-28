@@ -192,10 +192,11 @@ describe('JASY Everyday in Safari on the iOS Simulator (phone test plan)', () =>
       await Store.open('/');
       const cards = await Store.categoryCardReport();
       console.log('TC18 cards: ' + cards.map((c) => c.name + ' ' + Math.round(c.width) + 'x' + Math.round(c.height)).join(' ; '));
-      must(cards.length >= site.drawerCategories.length, 'Found ' + cards.length + ' category cards, expected ' + site.drawerCategories.length);
+      const homeCats = site.homeCategories || site.drawerCategories;
+      must(cards.length >= homeCats.length, 'Found ' + cards.length + ' category cards, expected ' + homeCats.length);
       must(cards.every((c) => c.left >= 0 && c.right <= c.screenW + 1), 'A category card runs off the screen');
       await Store.expectCardsDoNotOverlap(cards);
-      for (const category of site.drawerCategories) {
+      for (const category of homeCats) {
         await Store.open('/');
         const card = await $(locators.categoryCards + '[href*="' + category.path + '"]');
         await card.waitForExist({ timeout: 8000, timeoutMsg: 'No category card for ' + category.name });

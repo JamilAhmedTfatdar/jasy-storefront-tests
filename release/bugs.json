@@ -137,6 +137,16 @@
         "TC48"
       ],
       "fix": "Ask CJ support to remove it. Keep Fulfill Authorized Orders OFF until go-live"
+    },
+    {
+      "id": "BUG-014",
+      "title": "Drawer Dividers (Shopify Collective, Royal Craft Wood): delivery time and return terms not yet checked against the store Shipping and Refund policy pages",
+      "severity": "Minor",
+      "status": "open",
+      "tests": [
+        "TC14"
+      ],
+      "fix": "Check the supplier delivery time and returns in the product page, then add a line to the Shipping and Refund policy pages if they differ from the CJ wording"
     }
   ]
 }

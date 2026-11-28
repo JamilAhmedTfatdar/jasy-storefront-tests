@@ -137,5 +137,19 @@
         "square"
       ]
     ]
-  }
+  },
+  "homeCategories": [
+    {
+      "name": "Pet Care Essentials",
+      "path": "/collections/pet-care-essentials"
+    },
+    {
+      "name": "Cleaning Essentials",
+      "path": "/collections/cleaning-essentials"
+    },
+    {
+      "name": "Home Organization",
+      "path": "/collections/home-organization"
+    }
+  ]
 }

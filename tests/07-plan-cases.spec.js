@@ -221,15 +221,16 @@ for (const [id, tag] of [['TC17', '@desktop'], ['TC18', '@mobile']]) {
   test(`${id} Home category cards have the right title and destination, no overlap, each opens ${tag}`, async ({ page }) => {
     await gotoSettled(page, '/');
     const cards = await cardReport(page);
-    expect(cards.length, 'Found ' + cards.length + ' category cards, expected ' + site.drawerCategories.length).toBeGreaterThanOrEqual(site.drawerCategories.length);
+    const homeCats = site.homeCategories || site.drawerCategories;
+    expect(cards.length, 'Found ' + cards.length + ' category cards, expected ' + homeCats.length).toBeGreaterThanOrEqual(homeCats.length);
     expect(cards.every((c) => c.left >= -1 && c.right <= c.screenW + 1), 'A category card runs off the screen').toBe(true);
     expectNoOverlap(cards);
-    for (const category of site.drawerCategories) {
+    for (const category of homeCats) {
       const card = cards.find((c) => c.path === category.path);
       expect(card, 'No category card links to ' + category.path).toBeDefined();
       expect(card.name.toLowerCase(), 'The card for ' + category.path + ' says "' + card.name + '"').toContain(category.name.toLowerCase());
     }
-    for (const category of site.drawerCategories) {
+    for (const category of homeCats) {
       await gotoSettled(page, '/');
       await page.locator('a.jasy-discovery__card[href*="' + category.path + '"]').first().click();
       await page.waitForLoadState('domcontentloaded');
